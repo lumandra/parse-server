@@ -254,7 +254,7 @@ export class PublicAPIRouter extends PromiseRouter {
   invalidRequest() {
     const error = new Error();
     error.status = 403;
-    error.message = 'unauthorized';
+    error.message = 'unauthorized in Public Api router';
     throw error;
   }
 

@@ -68,7 +68,7 @@ export function handleParseHeaders(req, res, next) {
       try {
         req.body = JSON.parse(req.body);
       } catch (e) {
-        return invalidRequest(req, res);
+        return invalidRequest(req, res, e);
       }
       fileViaJSON = true;
     }
@@ -114,7 +114,7 @@ export function handleParseHeaders(req, res, next) {
         delete req.body._ContentType;
       }
     } else {
-      return invalidRequest(req, res);
+      return invalidRequest(req, res, 'content-type err');
     }
   }
 
@@ -147,7 +147,7 @@ export function handleParseHeaders(req, res, next) {
     req.config.masterKeyIps.length !== 0 &&
     req.config.masterKeyIps.indexOf(clientIp) === -1
   ) {
-    return invalidRequest(req, res);
+    return invalidRequest(req, res, 'master key err');
   }
 
   var isMaster = info.masterKey === req.config.masterKey;
@@ -189,7 +189,7 @@ export function handleParseHeaders(req, res, next) {
   });
 
   if (oneKeyConfigured && !oneKeyMatches) {
-    return invalidRequest(req, res);
+    return invalidRequest(req, res, 'one Key err');
   }
 
   if (req.url == '/login') {
@@ -450,7 +450,7 @@ export function promiseEnsureIdempotency(req) {
     });
 }
 
-function invalidRequest(req, res) {
+function invalidRequest(req, res, e = "") {
   res.status(403);
-  res.end('{"error":"unauthorized"}');
+  res.end(`{"error":"unauthorized with error: ${e}"}`);
 }
